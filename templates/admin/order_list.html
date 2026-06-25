@@ -1,0 +1,43 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Manajemen Pesanan{% endblock %}
+{% block admin_content %}
+<h2 class="section-title">Manajemen Pesanan</h2>
+
+{% set status_badge = {
+  'menunggu': 'secondary', 'diproses': 'info', 'sedang_dibuat': 'primary',
+  'siap_diambil': 'warning', 'selesai': 'success', 'dibatalkan': 'danger'
+} %}
+{% set status_labels = {
+  'menunggu': 'Menunggu Pembayaran', 'diproses': 'Diproses', 'sedang_dibuat': 'Sedang Dibuat',
+  'siap_diambil': 'Siap Diambil', 'selesai': 'Selesai', 'dibatalkan': 'Dibatalkan'
+} %}
+
+<form method="GET" class="mb-3" style="max-width:250px;">
+  <select name="status" class="form-select" onchange="this.form.submit()">
+    <option value="">Semua Status</option>
+    {% for s in status_choices %}
+    <option value="{{ s }}" {% if status_filter == s %}selected{% endif %}>{{ status_labels.get(s, s | replace('_',' ') | title) }}</option>
+    {% endfor %}
+  </select>
+</form>
+
+<div class="card p-3">
+  <table class="table align-middle">
+    <thead><tr><th>Kode</th><th>Pelanggan</th><th>Tanggal</th><th>Total</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+      {% for o in orders %}
+      <tr>
+        <td>{{ o.order_code }}</td>
+        <td>{{ o.user.name }}</td>
+        <td>{{ o.created_at.strftime('%d %b %Y %H:%M') }}</td>
+        <td>{{ o.total_price | rupiah }}</td>
+        <td><span class="badge bg-{{ status_badge.get(o.status,'secondary') }}">{{ status_labels.get(o.status, o.status | replace('_',' ') | title) }}</span></td>
+        <td><a href="{{ url_for('admin_order.detail', order_id=o.id) }}" class="btn btn-sm btn-outline-secondary">Detail</a></td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6" class="text-center text-muted">Belum ada pesanan.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

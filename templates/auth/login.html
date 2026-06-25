@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<div class="container py-5" style="max-width: 420px;">
+  <div class="card p-4">
+    <h2 class="section-title text-center mx-auto">Login</h2>
+    <form method="POST" novalidate>
+      {{ form.hidden_tag() }}
+      <div class="mb-3">
+        {{ form.identifier.label(class="form-label") }}
+        {{ form.identifier(class="form-control", placeholder="Username atau Email") }}
+        {% for err in form.identifier.errors %}<small class="text-danger">{{ err }}</small>{% endfor %}
+      </div>
+      <div class="mb-3">
+        {{ form.password.label(class="form-label") }}
+        <div class="password-field-wrapper">
+          {{ form.password(class="form-control", id="loginPassword") }}
+          <button type="button" class="password-toggle-btn" data-target="loginPassword">👁️</button>
+        </div>
+        {% for err in form.password.errors %}<small class="text-danger">{{ err }}</small>{% endfor %}
+      </div>
+      <button type="submit" class="btn btn-cafe w-100">Login</button>
+    </form>
+    <p class="text-center mt-3 mb-0">Belum punya akun? <a href="{{ url_for('auth.register') }}">Daftar</a></p>
+      
+  </div>
+</div>
+{% endblock %}

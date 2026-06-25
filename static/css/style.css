@@ -1,0 +1,250 @@
+/* ==========================================================================
+   FiftyOne Cafe — Design System
+   Konsep: olive green + cream, display serif (Fraunces) + sans (Poppins),
+   tombol pill, aksen dotted, kartu rounded besar (mengikuti referensi).
+   ========================================================================== */
+
+:root {
+  --cafe-green: #3f4e35;       /* olive green utama (hero, navbar) */
+  --cafe-green-dark: #2c3826;  /* hijau lebih gelap untuk depth */
+  --cafe-green-light: #5c6b4c; /* aksen hijau lebih terang */
+  --cafe-cream: #faf6ee;       /* background section terang */
+  --cafe-cream-soft: #f1ead9;  /* card / highlight background */
+  --cafe-tan: #cdb792;         /* tombol pill, aksen */
+  --cafe-tan-dark: #b39d76;
+  --cafe-text: #2b2920;
+  --cafe-text-soft: #5c5848;
+}
+
+body {
+  background-color: var(--cafe-cream);
+  font-family: 'Poppins', 'Segoe UI', sans-serif;
+  color: var(--cafe-text);
+}
+
+h1, h2, h3, h4, .navbar-brand, .display-title {
+  font-family: 'Fraunces', Georgia, serif;
+  letter-spacing: -0.5px;
+}
+
+/* ---------- Navbar ---------- */
+.navbar {
+  background-color: var(--cafe-green-dark) !important;
+  box-shadow: 0 2px 14px rgba(0,0,0,0.2);
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
+
+.navbar-brand img {
+  border: 2px solid var(--cafe-tan);
+}
+
+.navbar-brand {
+  font-size: 1.25rem;
+  color: #fff !important;
+}
+
+.nav-link {
+  font-weight: 500;
+  color: #ece6d8 !important;
+}
+
+.nav-link:hover {
+  color: var(--cafe-tan) !important;
+}
+
+/* ---------- Buttons (pill style seperti referensi) ---------- */
+.btn-cafe {
+  background-color: var(--cafe-tan);
+  color: var(--cafe-green-dark);
+  border: none;
+  font-weight: 600;
+  border-radius: 50px;
+  padding: 10px 28px;
+  transition: all 0.25s ease;
+}
+
+.btn-cafe:hover {
+  background-color: var(--cafe-tan-dark);
+  color: var(--cafe-green-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(180, 150, 100, 0.35);
+}
+
+.btn-outline-light, .btn-outline-secondary, .btn-outline-dark, .btn-outline-danger {
+  border-radius: 50px;
+}
+
+.btn, .form-control, .form-select {
+  border-radius: 10px;
+}
+
+/* ---------- Hero Section ---------- */
+.hero-section {
+  background-color: var(--cafe-green);
+  background-image: radial-gradient(circle at 85% 20%, rgba(255,255,255,0.05), transparent 60%);
+  color: #f5f1e6;
+  padding: 90px 0 70px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 0 0 36px 36px;
+}
+
+.hero-section h1 {
+  font-weight: 600;
+  font-size: 3.2rem;
+  line-height: 1.1;
+}
+
+.hero-section .lead {
+  color: #d8d3c2;
+  max-width: 480px;
+}
+
+.hero-img {
+  border-radius: 24px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+}
+
+/* dotted accent like the reference design */
+.dotted-accent {
+  position: absolute;
+  width: 160px;
+  height: 160px;
+  background-image: radial-gradient(var(--cafe-tan) 2px, transparent 2.5px);
+  background-size: 16px 16px;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* ---------- Feature icons row ---------- */
+.feature-item {
+  text-align: left;
+}
+
+.feature-item .icon {
+  font-size: 1.8rem;
+  margin-bottom: 8px;
+  display: inline-block;
+}
+
+.feature-item h6 {
+  font-weight: 700;
+  font-family: 'Fraunces', serif;
+  margin-bottom: 4px;
+}
+
+.feature-item p {
+  color: var(--cafe-text-soft);
+  font-size: 0.9rem;
+  margin-bottom: 0;
+}
+
+/* ---------- Section titles ---------- */
+.section-title {
+  font-weight: 600;
+  color: var(--cafe-green-dark);
+  margin-bottom: 1.5rem;
+}
+
+.section-title.text-center {
+  text-align: center;
+}
+
+/* ---------- Cards (menu highlight style: image + overlay text) ---------- */
+.card-product {
+  border: none;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(63, 78, 53, 0.12);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  background-color: #fff;
+}
+
+.card-product:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 14px 28px rgba(63, 78, 53, 0.2);
+}
+
+.card-product .card-body {
+  padding: 1.25rem;
+}
+
+.card-product .card-title {
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+}
+
+.card {
+  border: none;
+  border-radius: 18px;
+  box-shadow: 0 4px 16px rgba(63, 78, 53, 0.08);
+}
+
+.badge.bg-secondary {
+  background-color: var(--cafe-green-light) !important;
+  border-radius: 50px;
+  font-weight: 500;
+}
+
+/* ---------- About section ---------- */
+.about-section {
+  background-color: var(--cafe-green-dark);
+  color: #f1ead9;
+  border-radius: 36px;
+  padding: 60px 0;
+}
+
+.about-section .section-title {
+  color: #fff;
+}
+
+.about-img {
+  border-radius: 20px;
+  box-shadow: 0 18px 40px rgba(0,0,0,0.35);
+}
+
+/* ---------- Forms ---------- */
+.form-control:focus, .form-select:focus {
+  border-color: var(--cafe-tan);
+  box-shadow: 0 0 0 0.2rem rgba(205, 183, 146, 0.3);
+}
+
+.password-field-wrapper {
+  position: relative;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: var(--cafe-text-soft);
+  background: none;
+  border: none;
+  font-size: 0.95rem;
+}
+
+.password-toggle-btn:hover {
+  color: var(--cafe-tan-dark);
+}
+
+/* ---------- Footer ---------- */
+footer {
+  background-color: var(--cafe-green-dark) !important;
+  color: #d8d3c2;
+}
+
+/* ---------- Status step circle (order tracking) ---------- */
+.step-circle {
+  width: 34px;
+  height: 34px;
+  line-height: 34px;
+  border-radius: 50%;
+  font-weight: 600;
+}
+
+/* ---------- Misc ---------- */
+.text-cafe-green { color: var(--cafe-green); }
+.bg-cafe-cream-soft { background-color: var(--cafe-cream-soft); }

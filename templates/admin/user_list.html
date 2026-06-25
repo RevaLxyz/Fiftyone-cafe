@@ -1,0 +1,29 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Manajemen User{% endblock %}
+{% block admin_content %}
+<h2 class="section-title">Manajemen User</h2>
+
+<div class="card p-3">
+  <table class="table align-middle">
+    <thead><tr><th>Nama</th><th>Username</th><th>Email</th><th>Terdaftar</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+      {% for u in users %}
+      <tr>
+        <td>{{ u.name }}</td>
+        <td>{{ u.username }}</td>
+        <td>{{ u.email }}</td>
+        <td>{{ u.created_at.strftime('%d %b %Y') }}</td>
+        <td><span class="badge bg-{{ 'success' if u.is_active else 'secondary' }}">{{ 'Aktif' if u.is_active else 'Nonaktif' }}</span></td>
+        <td>
+          <form method="POST" action="{{ url_for('admin_user.toggle_active', user_id=u.id) }}">
+            <button type="submit" class="btn btn-sm btn-outline-warning">{{ 'Nonaktifkan' if u.is_active else 'Aktifkan' }}</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6" class="text-center text-muted">Belum ada user.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

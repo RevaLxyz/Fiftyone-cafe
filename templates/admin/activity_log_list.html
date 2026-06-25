@@ -1,0 +1,24 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Activity Log{% endblock %}
+{% block admin_content %}
+<h2 class="section-title">Activity Log</h2>
+
+<div class="card p-3">
+  <table class="table align-middle">
+    <thead><tr><th>Waktu</th><th>User</th><th>Aksi</th><th>Deskripsi</th><th>IP</th></tr></thead>
+    <tbody>
+      {% for log in logs %}
+      <tr>
+        <td>{{ log.created_at.strftime('%d %b %Y %H:%M') }}</td>
+        <td>{{ log.user.username if log.user else '-' }}</td>
+        <td><span class="badge bg-secondary">{{ log.action }}</span></td>
+        <td>{{ log.description }}</td>
+        <td>{{ log.ip_address or '-' }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="5" class="text-center text-muted">Belum ada aktivitas tercatat.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

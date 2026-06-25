@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Register{% endblock %}
+{% block content %}
+<div class="container py-5" style="max-width: 480px;">
+  <div class="card p-4">
+    <h2 class="section-title text-center mx-auto">Daftar Akun</h2>
+    <form method="POST" novalidate>
+      {{ form.hidden_tag() }}
+      <div class="mb-3">
+        {{ form.name.label(class="form-label") }}
+        {{ form.name(class="form-control") }}
+        {% for err in form.name.errors %}<small class="text-danger">{{ err }}</small>{% endfor %}
+      </div>
+      <div class="mb-3">
+        {{ form.username.label(class="form-label") }}
+        {{ form.username(class="form-control", placeholder="cth: budisantoso") }}
+        {% for err in form.username.errors %}<small class="text-danger">{{ err }}</small>{% endfor %}
+      </div>
+      <div class="mb-3">
+        {{ form.email.label(class="form-label") }}
+        {{ form.email(class="form-control") }}
+        {% for err in form.email.errors %}<small class="text-danger">{{ err }}</small>{% endfor %}
+      </div>
+      <div class="mb-3">
+        {{ form.phone.label(class="form-label") }}
+        {{ form.phone(class="form-control") }}
+      </div>
+      <div class="mb-3">
+        {{ form.password.label(class="form-label") }}
+        <div class="password-field-wrapper">
+          {{ form.password(class="form-control", id="regPassword") }}
+          <button type="button" class="password-toggle-btn" data-target="regPassword">👁️</button>
+        </div>
+        {% for err in form.password.errors %}<small class="text-danger">{{ err }}</small>{% endfor %}
+      </div>
+      <div class="mb-3">
+        {{ form.confirm_password.label(class="form-label") }}
+        <div class="password-field-wrapper">
+          {{ form.confirm_password(class="form-control", id="regConfirmPassword") }}
+          <button type="button" class="password-toggle-btn" data-target="regConfirmPassword">👁️</button>
+        </div>
+        {% for err in form.confirm_password.errors %}<small class="text-danger">{{ err }}</small>{% endfor %}
+      </div>
+      <button type="submit" class="btn btn-cafe w-100">Daftar</button>
+    </form>
+    <p class="text-center mt-3 mb-0">Sudah punya akun? <a href="{{ url_for('auth.login') }}">Login</a></p>
+  </div>
+</div>
+{% endblock %}

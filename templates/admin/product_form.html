@@ -1,0 +1,114 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}{{ 'Tambah' if mode == 'create' else 'Edit' }} Produk{% endblock %}
+
+{% block admin_content %}
+<h2 class="section-title">{{ 'Tambah Produk Baru' if mode == 'create' else 'Edit Produk' }}</h2>
+
+<div class="card p-4" style="max-width: 700px;">
+  <form method="POST" id="productForm" novalidate>
+    {{ form.hidden_tag() }}
+
+    <div class="mb-3">
+      {{ form.name.label(class="form-label") }}
+      {{ form.name(class="form-control") }}
+      {% for err in form.name.errors %}<small class="text-danger">{{ err }}</small>{% endfor %}
+    </div>
+
+    <div class="mb-3">
+      {{ form.category_id.label(class="form-label") }}
+      {{ form.category_id(class="form-select") }}
+    </div>
+
+    <div class="mb-3">
+      {{ form.description.label(class="form-label") }}
+      {{ form.description(class="form-control", rows=3) }}
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        {{ form.price.label(class="form-label") }}
+        {{ form.price(class="form-control") }}
+      </div>
+      <div class="col-md-6 mb-3">
+        {{ form.stock.label(class="form-label") }}
+        {{ form.stock(class="form-control") }}
+      </div>
+    </div>
+
+    <hr>
+    <h6>Foto Produk (rasio wajib 1:1)</h6>
+
+    {% if mode == 'edit' and product and product.image and product.image != 'default-product.png' %}
+    <p class="text-muted small">Foto saat ini:</p>
+    <img src="{{ url_for('static', filename='uploads/products/' + product.image) }}" width="100" height="100" class="rounded mb-2" style="object-fit:cover;">
+    {% endif %}
+
+    <input type="file" id="imageInput" accept="image/*" class="form-control mb-3">
+
+    <div id="cropContainer" class="mb-3" style="display:none; max-width:400px;">
+      <img id="cropImage" style="max-width:100%;">
+    </div>
+
+    <button type="button" id="cropBtn" class="btn btn-outline-secondary mb-3" style="display:none;">Crop & Preview</button>
+
+    <div id="previewContainer" style="display:none;" class="mb-3">
+      <p class="text-muted small">Preview hasil crop (1:1):</p>
+      <img id="previewImage" width="120" height="120" class="rounded border" style="object-fit:cover;">
+    </div>
+
+    {{ form.cropped_image(id="croppedImageField", type="hidden") }}
+
+    <button type="submit" class="btn btn-cafe w-100 mt-2">Simpan Produk</button>
+  </form>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+<script>
+let cropper = null;
+const imageInput = document.getElementById('imageInput');
+const cropImage = document.getElementById('cropImage');
+const cropContainer = document.getElementById('cropContainer');
+const cropBtn = document.getElementById('cropBtn');
+const previewContainer = document.getElementById('previewContainer');
+const previewImage = document.getElementById('previewImage');
+const croppedField = document.getElementById('croppedImageField');
+
+imageInput.addEventListener('change', function (e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function (event) {
+    cropImage.src = event.target.result;
+    cropContainer.style.display = 'block';
+    cropBtn.style.display = 'inline-block';
+
+    if (cropper) cropper.destroy();
+    cropper = new Cropper(cropImage, {
+      aspectRatio: 1,   // WAJIB rasio 1:1
+      viewMode: 1,
+      autoCropArea: 1,
+      movable: true,
+      zoomable: true,
+    });
+  };
+  reader.readAsDataURL(file);
+});
+
+cropBtn.addEventListener('click', function () {
+  if (!cropper) return;
+  const canvas = cropper.getCroppedCanvas({ width: 600, height: 600 });
+  const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+
+  previewImage.src = dataUrl;
+  previewContainer.style.display = 'block';
+  croppedField.value = dataUrl;
+});
+</script>
+{% endblock %}

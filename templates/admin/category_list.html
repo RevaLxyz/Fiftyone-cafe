@@ -1,0 +1,51 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Manajemen Kategori{% endblock %}
+{% block admin_content %}
+<h2 class="section-title">Manajemen Kategori</h2>
+
+<div class="row g-4">
+  <div class="col-md-5">
+    <div class="card p-3">
+      <h6>Tambah Kategori</h6>
+      <form method="POST" action="{{ url_for('admin_category.create') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="input-group">
+          <input type="text" name="name" class="form-control" placeholder="Nama kategori" required>
+          <button type="submit" class="btn btn-cafe">Tambah</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="col-md-7">
+    <div class="card p-3">
+      <table class="table align-middle mb-0">
+        <thead><tr><th>Nama</th><th>Jumlah Produk</th><th></th></tr></thead>
+        <tbody>
+          {% for c in categories %}
+          <tr>
+            <td>
+              <form method="POST" action="{{ url_for('admin_category.edit', category_id=c.id) }}" class="d-flex gap-1">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="text" name="name" value="{{ c.name }}" class="form-control form-control-sm">
+                <button type="submit" class="btn btn-sm btn-outline-secondary">Simpan</button>
+              </form>
+            </td>
+            <td>{{ c.products.count() }}</td>
+            <td>
+             <form method="POST" action="{{ url_for('admin_category.delete', category_id=c.id) }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn btn-sm btn-outline-danger">Hapus</button>
+                </form>
+              
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="3" class="text-center text-muted">Belum ada kategori.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

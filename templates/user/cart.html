@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Keranjang{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <h2 class="section-title">Keranjang Belanja</h2>
+
+  {% if cart.lines %}
+  <table class="table align-middle">
+    <thead>
+      <tr><th>Produk</th><th>Harga</th><th>Jumlah</th><th>Subtotal</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for item in cart.lines %}
+      <tr>
+        <td>{{ item.product.name }}</td>
+        <td>{{ item.product.price | rupiah }}</td>
+        <td style="max-width:120px;">
+          <form method="POST" action="{{ url_for('cart.add', product_id=item.product.id) }}" class="d-flex gap-1">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="number" name="quantity" value="{{ item.quantity }}" min="1" class="form-control form-control-sm">
+            <button type="submit" class="btn btn-sm btn-outline-secondary">↻</button>
+          </form>
+        </td>
+        <td>{{ item.subtotal | rupiah }}</td>
+        <td>
+          <form method="POST" action="{{ url_for('cart.remove', product_id=item.product.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn-sm btn-outline-danger">Hapus</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="d-flex justify-content-between align-items-center">
+    <h4>Total: {{ cart.total | rupiah }}</h4>
+    <a href="{{ url_for('order.checkout_view') }}" class="btn btn-cafe btn-lg">Checkout</a>
+  </div>
+  {% else %}
+  <p class="text-muted text-center">Keranjang Anda masih kosong.</p>
+  <div class="text-center"><a href="{{ url_for('menu.index') }}" class="btn btn-cafe">Lihat Menu</a></div>
+  {% endif %}
+</div>
+{% endblock %}

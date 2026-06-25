@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Edit Profil{% endblock %}
+{% block content %}
+<div class="container py-5" style="max-width: 480px;">
+  <h2 class="section-title text-center">Edit Profil</h2>
+  <form method="POST" novalidate>
+    {{ form.hidden_tag() }}
+    <div class="mb-3">
+      {{ form.name.label(class="form-label") }}
+      {{ form.name(class="form-control") }}
+    </div>
+    <div class="mb-3">
+      {{ form.phone.label(class="form-label") }}
+      {{ form.phone(class="form-control") }}
+    </div>
+    <div class="mb-3">
+      {{ form.address.label(class="form-label") }}
+      {{ form.address(class="form-control", rows=3) }}
+    </div>
+    <button type="submit" class="btn btn-cafe w-100">Simpan</button>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Menu - D'51 Cafe{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <h2 class="section-title">Menu Kami</h2>
+
+  <form method="GET" class="row g-2 mb-4">
+    <div class="col-md-6">
+      <input type="text" name="q" value="{{ search }}" class="form-control" placeholder="Cari menu...">
+    </div>
+    <div class="col-md-4">
+      <select name="category" class="form-select">
+        <option value="">Semua Kategori</option>
+        {% for c in categories %}
+        <option value="{{ c.id }}" {% if category_id == c.id %}selected{% endif %}>{{ c.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-cafe w-100">Cari</button>
+    </div>
+  </form>
+
+  <div class="row g-4">
+    {% for produk in produk_list %}
+    <div class="col-md-4">
+      <div class="card card-product h-100">
+        <div class="card-body">
+          <span class="badge bg-secondary mb-2">{{ produk.category.name }}</span>
+          <h5 class="card-title">{{ produk.name }}</h5>
+          <p class="card-text text-muted small">{{ produk.description }}</p>
+          <p class="fw-bold">{{ produk.price | rupiah }}</p>
+          <div class="d-flex align-items-center gap-2">
+            <a href="{{ url_for('menu.detail', slug=produk.slug) }}" class="btn btn-outline-secondary btn-sm flex-grow-1 d-flex align-items-center justify-content-center">Detail</a>
+            <form method="POST" action="{{ url_for('cart.add') }}" class="m-0">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <input type="hidden" name="product_id" value="{{ produk.id }}">
+              <input type="hidden" name="quantity" value="1">
+              <button type="submit" class="btn btn-cafe btn-sm">+ Keranjang</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <p class="text-center text-muted">Menu tidak ditemukan.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

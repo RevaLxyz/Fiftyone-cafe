@@ -1,0 +1,68 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Dashboard Admin{% endblock %}
+{% block admin_content %}
+  <h2 class="section-title">Dashboard Admin</h2>
+
+  <div class="row g-3 mb-4">
+    <div class="col-md-3">
+      <div class="card p-3 text-center"><h6 class="text-muted">Total User</h6><h3>{{ summary.total_user }}</h3></div>
+    </div>
+    <div class="col-md-3">
+      <div class="card p-3 text-center"><h6 class="text-muted">Total Produk</h6><h3>{{ summary.total_produk }}</h3></div>
+    </div>
+    <div class="col-md-3">
+      <div class="card p-3 text-center"><h6 class="text-muted">Total Pesanan</h6><h3>{{ summary.total_pesanan }}</h3></div>
+    </div>
+    <div class="col-md-3">
+      <div class="card p-3 text-center"><h6 class="text-muted">Total Pendapatan</h6><h3>{{ summary.total_pendapatan | rupiah }}</h3></div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-md-8">
+      <div class="card p-3">
+        <h5>Grafik Penjualan (7 Hari Terakhir)</h5>
+        <canvas id="salesChart" height="120"></canvas>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card p-3">
+        <h5>Produk Terlaris</h5>
+        <ul class="list-group list-group-flush">
+          {% for p in best_sellers %}
+          <li class="list-group-item d-flex justify-content-between">
+            {{ p.name }} <span class="badge bg-secondary">{{ p.total_terjual }} terjual</span>
+          </li>
+          {% else %}
+          <li class="list-group-item text-muted">Belum ada data penjualan.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script>
+fetch("{{ url_for('admin_dashboard.sales_chart') }}")
+  .then(res => res.json())
+  .then(data => {
+    new Chart(document.getElementById('salesChart'), {
+      type: 'line',
+      data: {
+        labels: data.labels,
+        datasets: [{
+          label: 'Pendapatan',
+          data: data.values,
+          borderColor: '#c9a14a',
+          backgroundColor: 'rgba(201,161,74,0.2)',
+          tension: 0.3,
+          fill: true
+        }]
+      },
+      options: { responsive: true }
+    });
+  });
+</script>
+{% endblock %}

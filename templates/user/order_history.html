@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Riwayat Pesanan{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <h2 class="section-title">Riwayat Pesanan</h2>
+
+  {% set status_badge = {
+    'menunggu': 'secondary', 'diproses': 'info', 'sedang_dibuat': 'primary',
+    'siap_diambil': 'warning', 'selesai': 'success', 'dibatalkan': 'danger'
+  } %}
+  {% set status_labels = {
+    'menunggu': 'Menunggu Pembayaran', 'diproses': 'Diproses', 'sedang_dibuat': 'Sedang Dibuat',
+    'siap_diambil': 'Siap Diambil', 'selesai': 'Selesai', 'dibatalkan': 'Dibatalkan'
+  } %}
+
+  {% if orders %}
+  <table class="table align-middle">
+    <thead><tr><th>Kode</th><th>Tanggal</th><th>Total</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+      {% for o in orders %}
+      <tr>
+        <td>{{ o.order_code }}</td>
+        <td>{{ o.created_at.strftime('%d %b %Y %H:%M') }}</td>
+        <td>{{ o.total_price | rupiah }}</td>
+        <td><span class="badge bg-{{ status_badge.get(o.status, 'secondary') }}">{{ status_labels.get(o.status, o.status | replace('_',' ') | title) }}</span></td>
+        <td><a href="{{ url_for('order.detail', order_code=o.order_code) }}" class="btn btn-sm btn-outline-secondary">Detail</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="text-muted text-center">Belum ada pesanan.</p>
+  {% endif %}
+</div>
+{% endblock %}

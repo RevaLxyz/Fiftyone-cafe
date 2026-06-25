@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Checkout{% endblock %}
+{% block content %}
+<div class="container py-4" style="max-width: 600px;">
+  <h2 class="section-title">Checkout</h2>
+
+  <div class="card p-3 mb-3">
+    <h5>Ringkasan Pesanan</h5>
+    <ul class="list-group list-group-flush">
+      {% for item in cart.lines %}
+      <li class="list-group-item d-flex justify-content-between">
+        {{ item.product.name }} x{{ item.quantity }}
+        <span>{{ item.subtotal | rupiah }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+    <div class="d-flex justify-content-between mt-2">
+      <strong>Total</strong>
+      <strong>{{ cart.total | rupiah }}</strong>
+    </div>
+  </div>
+
+  {% if cart.lines %}
+  <form method="POST" action="{{ url_for('order.checkout_view') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="mb-3">
+      <label class="form-label">Metode Pembayaran</label>
+      <select name="payment_method" class="form-select">
+        <option value="Tunai">Tunai (bayar di kasir)</option>
+        <option value="QRIS">QRIS</option>
+        <option value="Transfer Bank">Transfer Bank</option>
+      </select>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Catatan (opsional)</label>
+      <textarea name="notes" class="form-control" rows="2" placeholder="Contoh: less sugar, tanpa es"></textarea>
+    </div>
+    <button type="submit" class="btn btn-cafe w-100">Buat Pesanan</button>
+  </form>
+  {% else %}
+  <p class="text-muted text-center">Keranjang kosong, tidak bisa checkout.</p>
+  {% endif %}
+</div>
+{% endblock %}

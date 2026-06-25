@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}{{ produk.name }}{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <div class="row g-4">
+    <div class="col-md-5">
+      {% if produk.image and produk.image != 'default-product.png' %}
+      <img src="{{ url_for('static', filename='uploads/products/' + produk.image) }}" alt="{{ produk.name }}" class="img-fluid rounded-4 w-100" style="aspect-ratio:1/1;object-fit:cover;">
+      {% else %}
+      <div class="bg-light rounded-4 p-5 text-center text-muted">[Foto {{ produk.name }}]</div>
+      {% endif %}
+    </div>
+    <div class="col-md-7">
+      <span class="badge bg-secondary mb-2">{{ produk.category.name }}</span>
+      <h2>{{ produk.name }}</h2>
+      <p class="text-muted">{{ produk.description }}</p>
+      <h4 class="fw-bold">{{ produk.price | rupiah }}</h4>
+      <p>⭐ {{ produk.average_rating() }} / 5 ({{ produk.reviews.count() }} review)</p>
+
+      <form method="POST" action="{{ url_for('cart.add') }}" class="d-flex gap-2 mb-4">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="product_id" value="{{ produk.id }}">
+        <input type="number" name="quantity" value="1" min="1" class="form-control" style="max-width: 100px;">
+        <button type="submit" class="btn btn-cafe">Tambah ke Keranjang</button>
+      </form>
+
+      <hr>
+      <h5>Review Pelanggan</h5>
+      {% for r in produk.reviews %}
+      <div class="border-bottom py-2">
+        <strong>{{ r.user.name }}</strong> - ⭐{{ r.rating }}/5
+        <p class="mb-0 text-muted">{{ r.comment }}</p>
+      </div>
+      {% else %}
+      <p class="text-muted">Belum ada review.</p>
+      {% endfor %}
+
+      {% if current_user.is_authenticated %}
+      <form method="POST" action="{{ url_for('review.submit', product_id=produk.id) }}" class="mt-3">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="row g-2">
+          <div class="col-3">
+            <select name="rating" class="form-select">
+              {% for i in range(5, 0, -1) %}
+              <option value="{{ i }}">{{ i }} ⭐</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-6">
+            <input type="text" name="comment" class="form-control" placeholder="Tulis review...">
+          </div>
+          <div class="col-3">
+            <button type="submit" class="btn btn-outline-dark w-100">Kirim</button>
+          </div>
+        </div>
+        <small class="text-muted">*Hanya bisa review setelah pesanan Anda selesai.</small>
+      </form>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

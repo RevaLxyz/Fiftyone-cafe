@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block title %}FiftyOne Cafe - Home{% endblock %}
+
+{% block content %}
+<section class="hero-section">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6">
+        <h1 class="display-title">Kopi &amp; Pastry<br>Segar Setiap Hari</h1>
+        <p class="lead mt-3">Sudut nyaman tempat espresso spesial bertemu croissant hangat.
+        Pesan dulu, lewati antrian, nikmati momennya.</p>
+        <a href="{{ url_for('menu.index') }}" class="btn btn-cafe btn-lg mt-3">Lihat Menu</a>
+      </div>
+      <div class="col-lg-6 position-relative">
+        <div class="dotted-accent" style="bottom:-30px; right:-30px;"></div>
+        <div class="bg-cafe-cream-soft hero-img p-5 text-center" style="min-height:320px; display:flex; align-items:center; justify-content:center;">
+          <img src="{{ url_for('static', filename='img/LOG.png') }}" alt="FiftyOne Cafe" class="img-fluid">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="container py-5">
+  <div class="row g-4 text-center text-lg-start">
+    <div class="col-6 col-lg-3 feature-item">
+      <span class="icon">☕</span>
+      <h6>Kopi Spesial</h6>
+      <p>Roaster pilihan, 100% Arabika, ekstraksi presisi.</p>
+    </div>
+    <div class="col-6 col-lg-3 feature-item">
+      <span class="icon">🥐</span>
+      <h6>Bakery Pagi</h6>
+      <p>Croissant, danish, tart dipanggang setiap hari.</p>
+    </div>
+    <div class="col-6 col-lg-3 feature-item">
+      <span class="icon">🍳</span>
+      <h6>Sarapan Sepanjang Hari</h6>
+      <p>Menu klasik tersedia sampai tutup.</p>
+    </div>
+    <div class="col-6 col-lg-3 feature-item">
+      <span class="icon">📍</span>
+      <h6>Ambil Cepat</h6>
+      <p>Pesan dulu, siap diambil dalam 15 menit.</p>
+    </div>
+  </div>
+</section>
+
+<section class="container py-5" id="bestseller">
+  <div class="d-flex justify-content-between align-items-end mb-4">
+    <h2 class="section-title mb-0">Menu Best Seller</h2>
+    <a href="{{ url_for('menu.index') }}" class="text-decoration-none text-cafe-green small">Lihat semua menu &rarr;</a>
+  </div>
+  <div class="row g-4">
+    {% for produk in best_sellers %}
+    <div class="col-md-4">
+      <div class="card card-product h-100">
+        <div class="bg-cafe-cream-soft" style="aspect-ratio:1/1; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+          {% if produk.image and produk.image != 'default-product.png' %}
+          <img src="{{ url_for('static', filename='uploads/products/' + produk.image) }}" style="width:100%; height:100%; object-fit:cover;">
+          {% else %}
+          <span style="font-size:3rem;">🍽️</span>
+          {% endif %}
+        </div>
+        <div class="card-body">
+          <h5 class="card-title">{{ produk.name }}</h5>
+          <p class="card-text text-muted small">{{ produk.description }}</p>
+          <p class="fw-bold text-cafe-green mb-0">{{ produk.price | rupiah }}</p>
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <p class="text-center text-muted">Menu belum tersedia. Jalankan seeder untuk data demo.</p>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="about-section my-5">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6">
+        <div class="bg-cafe-cream-soft about-img" style="min-height:280px; display:flex; align-items:center; justify-content:center;">
+          <img src="{{ url_for('static', filename='img/tempat.jpeg') }}" alt="FiftyOne Cafe" class="img-fluid">
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <h2 class="section-title">Tentang FiftyOne Cafe</h2>
+        <p>D'51 Cafe (Fiftyone Cafe) adalah sister brand kuliner resmi YP IPPI Cakung &amp; Petojo yang mengusung konsep "Ngopi di Sekolah" dan Coffee to Go.</p>
+        <p>Dengan filosofi "Simple, Worthy, and Full of Good Vibes", D'51 Cafe berkomitmen menyediakan makanan dan minuman yang praktis, berkualitas, higienis, serta terjangkau.</p>
+        <ul class="mb-4">
+          <li>Kopi &amp; minuman dari biji kopi nusantara pilihan</li>
+          <li>Aneka camilan sehat: donat, roti less sugar, jajanan pasar</li>
+          <li>Menu makanan berat untuk makan siang</li>
+          <li>Tersedia juga online via GoFood</li>
+        </ul>
+        <p class="text-muted small">Buka Senin - Jumat, 09.00 - 15.00 WIB</p>
+        <a href="{{ url_for('menu.index') }}" class="btn btn-cafe">Lihat Menu</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="container py-5" id="testimoni">
+  <h2 class="section-title text-center">Apa Kata Pelanggan</h2>
+  <div class="row g-4">
+    {% for t in testimonials %}
+    <div class="col-md-4">
+      <div class="card p-3 h-100">
+        <p class="mb-1">"{{ t.comment }}"</p>
+        <small class="text-muted">- {{ t.user.name }} ({{ t.rating }}/5)</small>
+      </div>
+    </div>
+    {% else %}
+    <p class="text-center text-muted">Belum ada testimoni.</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
