@@ -98,3 +98,4 @@ didebug karena satu fungsi = satu tanggung jawab.
 - Logging aplikasi tersimpan di `logs/app.log` (rotating file handler).
 - Sudah diuji end-to-end (auth, cart, checkout, admin CRUD, upload+crop) menggunakan
   SQLite in-memory sebelum dikirim — siap dijalankan dengan MySQL sesuai konfigurasi `.env`.
+tes
