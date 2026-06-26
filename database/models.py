@@ -26,7 +26,7 @@ class User(db.Model, UserMixin):
     phone = db.Column(db.String(20))
     address = db.Column(db.Text)
     profile_photo = db.Column(db.String(255), default="default.png")
-    role = db.Column(db.Enum("admin", "user", name="role_enum"), default="user", nullable=False)
+    role = db.Column(db.Enum("admin", "staff", "kasir", "user", name="role_enum"), default="user", nullable=False)
     is_active = db.Column(db.Boolean, default=True, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
@@ -43,6 +43,12 @@ class User(db.Model, UserMixin):
 
     def is_admin(self) -> bool:
         return self.role == "admin"
+
+    def is_staff(self) -> bool:
+        return self.role in ("admin", "staff", "kasir")
+
+    def can_manage_orders(self) -> bool:
+        return self.role in ("admin", "staff", "kasir")
 
     def __repr__(self):
         return f"<User {self.email} ({self.role})>"

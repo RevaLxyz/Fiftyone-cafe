@@ -27,13 +27,20 @@
           <li class="nav-item"><a class="nav-link" href="{{ url_for('menu.index') }}">Menu</a></li>
           <li class="nav-item"><a class="nav-link" href="{{ url_for('public.about') }}">Tentang</a></li>
           <li class="nav-item"><a class="nav-link" href="{{ url_for('public.contact') }}">Kontak</a></li>
-          {% if current_user.is_authenticated and not current_user.is_admin() %}
+          {% if current_user.is_authenticated and current_user.role == 'user' %}
             <li class="nav-item"><a class="nav-link" href="{{ url_for('cart.index') }}">🛒 Keranjang</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('order.history') }}">Riwayat</a></li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('order.history') }}">
+                Riwayat
+                {% if user_active_order_count %}<span class="badge bg-warning text-dark">{{ user_active_order_count }}</span>{% endif %}
+              </a>
+            </li>
           {% endif %}
           {% if current_user.is_authenticated %}
             {% if current_user.is_admin() %}
               <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_dashboard.index') }}">Dashboard Admin</a></li>
+            {% elif current_user.can_manage_orders() %}
+              <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_order.index') }}">Panel Order</a></li>
             {% endif %}
             <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.edit_profile') }}">Profil ({{ current_user.name }})</a></li>
             <li class="nav-item"><a class="btn btn-outline-light btn-sm" href="{{ url_for('auth.logout') }}">Logout</a></li>

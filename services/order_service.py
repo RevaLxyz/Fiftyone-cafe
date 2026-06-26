@@ -23,6 +23,11 @@ def checkout(user_id: int, payment_method: str, notes: str = "") -> Order:
     if not cart["lines"]:
         raise OrderError("Keranjang Anda kosong. Tambahkan menu terlebih dahulu.")
 
+    for item in cart["lines"]:
+        product = item["product"]
+        if product.stock < item["quantity"]:
+            raise OrderError(f"Stok {product.name} tidak mencukupi. Sisa stok: {product.stock}.")
+
     order = Order(
         order_code=generate_order_code(),
         user_id=user_id,
@@ -35,11 +40,13 @@ def checkout(user_id: int, payment_method: str, notes: str = "") -> Order:
     db.session.flush()  # supaya order.id tersedia sebelum commit
 
     for item in cart["lines"]:
+        product = item["product"]
+        product.stock -= item["quantity"]
         order_item = OrderItem(
             order_id=order.id,
-            product_id=item["product"].id,
+            product_id=product.id,
             quantity=item["quantity"],
-            price_at_order=item["product"].price,
+            price_at_order=product.price,
             subtotal=item["subtotal"],
         )
         db.session.add(order_item)
@@ -91,6 +98,8 @@ def cancel_order(order_code: str, user_id: int) -> Order:
     order = get_order_detail(order_code, user_id)
     if order.status not in ("menunggu", "diproses"):
         raise OrderError("Pesanan ini sudah tidak bisa dibatalkan.")
+    for item in order.items:
+        item.product.stock += item.quantity
     order.status = "dibatalkan"
     db.session.commit()
     logger.info("Order dibatalkan: %s", order_code)

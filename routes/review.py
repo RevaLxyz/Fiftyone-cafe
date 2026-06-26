@@ -25,4 +25,8 @@ def submit(product_id):
     except ReviewError as e:
         flash(str(e), "danger")
 
-    return redirect(url_for("menu.detail", slug=product.slug))
+    order_code = request.form.get("order_code")
+    if order_code:
+        return redirect(url_for("order.detail", order_code=order_code))
+
+    return redirect(url_for("menu.index"))

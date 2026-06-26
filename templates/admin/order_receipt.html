@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Struk {{ order.order_code }}</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 360px; margin: 0 auto; padding: 16px; color: #222; }
+    h2, p { margin: 0; }
+    .center { text-align: center; }
+    .muted { color: #666; font-size: 12px; }
+    .line { border-top: 1px dashed #999; margin: 12px 0; }
+    .row { display: flex; justify-content: space-between; gap: 12px; margin: 6px 0; }
+    .total { font-weight: bold; font-size: 18px; }
+    button { width: 100%; padding: 10px; margin-top: 16px; }
+    @media print { button { display: none; } body { padding: 0; } }
+  </style>
+</head>
+<body>
+  <div class="center">
+    <h2>FiftyOne Cafe</h2>
+    <p class="muted">Struk Pesanan</p>
+  </div>
+
+  <div class="line"></div>
+  <p><strong>Kode:</strong> {{ order.order_code }}</p>
+  <p><strong>Tanggal:</strong> {{ order.created_at.strftime('%d %b %Y %H:%M') }}</p>
+  <p><strong>Pelanggan:</strong> {{ order.user.name }}</p>
+  <p><strong>Pembayaran:</strong> {{ order.payment_method }}</p>
+  <p><strong>Status:</strong> {{ order.status | replace('_',' ') | title }}</p>
+
+  <div class="line"></div>
+  {% for item in order.items %}
+  <div>
+    <div class="row">
+      <span>{{ item.product.name }} x{{ item.quantity }}</span>
+      <span>{{ item.subtotal | rupiah }}</span>
+    </div>
+    <p class="muted">@ {{ item.price_at_order | rupiah }}</p>
+  </div>
+  {% endfor %}
+
+  <div class="line"></div>
+  <div class="row total">
+    <span>Total</span>
+    <span>{{ order.total_price | rupiah }}</span>
+  </div>
+
+  {% if order.notes %}
+  <div class="line"></div>
+  <p><strong>Catatan:</strong> {{ order.notes }}</p>
+  {% endif %}
+
+  <div class="line"></div>
+  <p class="center muted">Terima kasih sudah berbelanja.</p>
+  <button onclick="window.print()">Cetak</button>
+</body>
+</html>

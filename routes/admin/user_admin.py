@@ -3,11 +3,11 @@ routes/admin/user_admin.py
 Blueprint Manajemen User admin: lihat user, aktifkan/nonaktifkan.
 """
 
-from flask import Blueprint, render_template, redirect, url_for, flash
+from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
 
 from utils.decorators import admin_required
-from services.user_admin_service import get_all_users, toggle_user_active, UserAdminError
+from services.user_admin_service import get_all_users, toggle_user_active, update_user_role, UserAdminError
 from services.activity_log_service import log_activity
 
 admin_user_bp = Blueprint("admin_user", __name__, url_prefix="/admin/users")
@@ -21,10 +21,30 @@ def index():
     return render_template("admin/user_list.html", users=users)
 
 
+@admin_user_bp.route("/<int:user_id>/role", methods=["POST"])
+@login_required
+@admin_required
+def update_role(user_id):
+    if user_id == current_user.id:
+        flash("Tidak bisa mengubah role akun sendiri.", "danger")
+        return redirect(url_for("admin_user.index"))
+    role = request.form.get("role", "user")
+    try:
+        user = update_user_role(user_id, role)
+        log_activity(current_user.id, "update_user_role", f"User '{user.username}' -> {role}")
+        flash(f"Role user '{user.username}' diperbarui menjadi {role}.", "success")
+    except UserAdminError as e:
+        flash(str(e), "danger")
+    return redirect(url_for("admin_user.index"))
+
+
 @admin_user_bp.route("/<int:user_id>/toggle-active", methods=["POST"])
 @login_required
 @admin_required
 def toggle_active(user_id):
+    if user_id == current_user.id:
+        flash("Tidak bisa menonaktifkan akun sendiri.", "danger")
+        return redirect(url_for("admin_user.index"))
     try:
         user = toggle_user_active(user_id)
         status = "diaktifkan" if user.is_active else "dinonaktifkan"

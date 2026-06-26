@@ -50,6 +50,8 @@ def login():
 
             if user.is_admin():
                 return redirect(url_for("admin_dashboard.index"))
+            if user.can_manage_orders():
+                return redirect(url_for("admin_order.index"))
             next_page = request.args.get("next")
             return redirect(next_page or url_for("public.landing"))
         except AuthError as e:

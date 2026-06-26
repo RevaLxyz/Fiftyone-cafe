@@ -1,7 +1,15 @@
 {% extends "admin/base_admin.html" %}
 {% block title %}Dashboard Admin{% endblock %}
 {% block admin_content %}
-  <h2 class="section-title">Dashboard Admin</h2>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="section-title mb-0">Dashboard Admin</h2>
+    <form class="d-flex gap-2" method="GET" action="{{ url_for('admin_dashboard.export_report') }}">
+      <input type="date" name="start_date" class="form-control form-control-sm">
+      <input type="date" name="end_date" class="form-control form-control-sm">
+      <button type="submit" class="btn btn-sm btn-cafe">Export Excel</button>
+      <button type="submit" formaction="{{ url_for('admin_dashboard.print_report') }}" class="btn btn-sm btn-outline-secondary">Export PDF</button>
+    </form>
+  </div>
 
   <div class="row g-3 mb-4">
     <div class="col-md-3">
@@ -21,7 +29,13 @@
   <div class="row g-4">
     <div class="col-md-8">
       <div class="card p-3">
-        <h5>Grafik Penjualan (7 Hari Terakhir)</h5>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="mb-0">Grafik Penjualan</h5>
+          <select id="salesPeriod" class="form-select form-select-sm" style="max-width:180px;">
+            <option value="daily">Harian</option>
+            <option value="monthly">Bulanan</option>
+          </select>
+        </div>
         <canvas id="salesChart" height="120"></canvas>
       </div>
     </div>
@@ -45,24 +59,35 @@
 {% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 <script>
-fetch("{{ url_for('admin_dashboard.sales_chart') }}")
-  .then(res => res.json())
-  .then(data => {
-    new Chart(document.getElementById('salesChart'), {
-      type: 'line',
-      data: {
-        labels: data.labels,
-        datasets: [{
-          label: 'Pendapatan',
-          data: data.values,
-          borderColor: '#c9a14a',
-          backgroundColor: 'rgba(201,161,74,0.2)',
-          tension: 0.3,
-          fill: true
-        }]
-      },
-      options: { responsive: true }
+let salesChart;
+
+function loadSalesChart(period) {
+  fetch(`{{ url_for('admin_dashboard.sales_chart') }}?period=${period}`)
+    .then(res => res.json())
+    .then(data => {
+      if (salesChart) salesChart.destroy();
+      salesChart = new Chart(document.getElementById('salesChart'), {
+        type: 'line',
+        data: {
+          labels: data.labels,
+          datasets: [{
+            label: 'Pendapatan',
+            data: data.values,
+            borderColor: '#c9a14a',
+            backgroundColor: 'rgba(201,161,74,0.2)',
+            tension: 0.3,
+            fill: true
+          }]
+        },
+        options: { responsive: true }
+      });
     });
-  });
+}
+
+const salesPeriod = document.getElementById('salesPeriod');
+salesPeriod.addEventListener('change', function () {
+  loadSalesChart(this.value);
+});
+loadSalesChart(salesPeriod.value);
 </script>
 {% endblock %}

@@ -4,6 +4,7 @@ Logic agregasi data untuk dashboard admin: total user, produk, pesanan,
 pendapatan, dan data grafik penjualan.
 """
 
+from datetime import datetime, time
 from sqlalchemy import func
 from database.db import db
 from database.models import User, Product, Order, OrderItem
@@ -26,23 +27,56 @@ def get_summary() -> dict:
     }
 
 
-def get_sales_chart_data(days: int = 7) -> dict:
-    """Data penjualan harian N hari terakhir, untuk Chart.js."""
+def get_sales_chart_data(period: str = "daily") -> dict:
+    date_expr = func.date(Order.created_at)
+    limit = 7
+
+    if period == "monthly":
+        date_expr = func.date_format(Order.created_at, "%Y-%m")
+        limit = 12
+
     results = (
         db.session.query(
-            func.date(Order.created_at).label("tanggal"),
+            date_expr.label("periode"),
             func.sum(Order.total_price).label("total"),
         )
         .filter(Order.status == "selesai")
-        .group_by(func.date(Order.created_at))
-        .order_by(func.date(Order.created_at).desc())
-        .limit(days)
+        .group_by(date_expr)
+        .order_by(date_expr.desc())
+        .limit(limit)
         .all()
     )
     results = list(reversed(results))
     return {
-        "labels": [str(r.tanggal) for r in results],
+        "labels": [str(r.periode) for r in results],
         "values": [float(r.total) for r in results],
+    }
+
+
+def _parse_report_dates(start_date: str = None, end_date: str = None):
+    start = None
+    end = None
+    if start_date:
+        start = datetime.combine(datetime.strptime(start_date, "%Y-%m-%d").date(), time.min)
+    if end_date:
+        end = datetime.combine(datetime.strptime(end_date, "%Y-%m-%d").date(), time.max)
+    return start, end
+
+
+def get_sales_report(start_date: str = None, end_date: str = None) -> list:
+    start, end = _parse_report_dates(start_date, end_date)
+    query = Order.query.filter(Order.status == "selesai")
+    if start:
+        query = query.filter(Order.created_at >= start)
+    if end:
+        query = query.filter(Order.created_at <= end)
+    return query.order_by(Order.created_at.desc()).all()
+
+
+def get_sales_report_summary(orders: list) -> dict:
+    return {
+        "total_orders": len(orders),
+        "total_revenue": sum(float(order.total_price) for order in orders),
     }
 
 

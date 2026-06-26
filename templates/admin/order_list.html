@@ -12,13 +12,29 @@
   'siap_diambil': 'Siap Diambil', 'selesai': 'Selesai', 'dibatalkan': 'Dibatalkan'
 } %}
 
-<form method="GET" class="mb-3" style="max-width:250px;">
-  <select name="status" class="form-select" onchange="this.form.submit()">
-    <option value="">Semua Status</option>
-    {% for s in status_choices %}
-    <option value="{{ s }}" {% if status_filter == s %}selected{% endif %}>{{ status_labels.get(s, s | replace('_',' ') | title) }}</option>
-    {% endfor %}
-  </select>
+{% if admin_new_order_count %}
+<div class="alert alert-warning">Ada {{ admin_new_order_count }} pesanan baru yang menunggu diproses.</div>
+{% endif %}
+
+<form method="GET" class="row g-2 mb-3">
+  <div class="col-md-3">
+    <select name="status" class="form-select">
+      <option value="">Semua Status</option>
+      {% for s in status_choices %}
+      <option value="{{ s }}" {% if status_filter == s %}selected{% endif %}>{{ status_labels.get(s, s | replace('_',' ') | title) }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-3">
+    <input type="date" name="start_date" value="{{ start_date }}" class="form-control">
+  </div>
+  <div class="col-md-3">
+    <input type="date" name="end_date" value="{{ end_date }}" class="form-control">
+  </div>
+  <div class="col-md-3 d-flex gap-2">
+    <button type="submit" class="btn btn-cafe">Filter</button>
+    <a href="{{ url_for('admin_order.index') }}" class="btn btn-outline-secondary">Reset</a>
+  </div>
 </form>
 
 <div class="card p-3">
@@ -32,7 +48,10 @@
         <td>{{ o.created_at.strftime('%d %b %Y %H:%M') }}</td>
         <td>{{ o.total_price | rupiah }}</td>
         <td><span class="badge bg-{{ status_badge.get(o.status,'secondary') }}">{{ status_labels.get(o.status, o.status | replace('_',' ') | title) }}</span></td>
-        <td><a href="{{ url_for('admin_order.detail', order_id=o.id) }}" class="btn btn-sm btn-outline-secondary">Detail</a></td>
+        <td class="d-flex gap-2">
+          <a href="{{ url_for('admin_order.detail', order_id=o.id) }}" class="btn btn-sm btn-outline-secondary">Detail</a>
+          <a href="{{ url_for('admin_order.receipt', order_id=o.id) }}" class="btn btn-sm btn-cafe">Struk</a>
+        </td>
       </tr>
       {% else %}
       <tr><td colspan="6" class="text-center text-muted">Belum ada pesanan.</td></tr>

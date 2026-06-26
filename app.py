@@ -39,6 +39,7 @@ def create_app():
 
     # --- Register error handler ---
     register_error_handlers(app)
+    register_template_context(app)
 
     # --- Template filter global (format rupiah dipakai di banyak halaman) ---
     from utils.helpers import format_rupiah
@@ -104,6 +105,28 @@ def register_error_handlers(app):
     def server_error(e):
         app.logger.exception("Internal server error: %s", e)
         return render_template("errors/500.html"), 500
+
+
+def register_template_context(app):
+    @app.context_processor
+    def inject_order_notifications():
+        from flask_login import current_user
+        from database.models import Order
+
+        if not current_user.is_authenticated:
+            return {}
+
+        if current_user.can_manage_orders():
+            return {
+                "admin_new_order_count": Order.query.filter_by(status="menunggu").count(),
+            }
+
+        return {
+            "user_active_order_count": Order.query.filter(
+                Order.user_id == current_user.id,
+                Order.status.in_(("menunggu", "diproses", "sedang_dibuat", "siap_diambil")),
+            ).count(),
+        }
 
 
 app = create_app()

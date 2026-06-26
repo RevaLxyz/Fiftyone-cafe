@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Laporan Penjualan</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 24px; color: #222; }
+    h2, p { margin: 0; }
+    .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
+    .muted { color: #666; font-size: 13px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+    th, td { border: 1px solid #ddd; padding: 8px; font-size: 13px; text-align: left; }
+    th { background: #f4f4f4; }
+    .summary { display: flex; gap: 16px; margin-top: 16px; }
+    .box { border: 1px solid #ddd; padding: 12px; min-width: 180px; }
+    button { padding: 10px 16px; }
+    @media print { button { display: none; } body { padding: 0; } }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div>
+      <h2>Laporan Penjualan FiftyOne Cafe</h2>
+      <p class="muted">
+        Periode:
+        {% if start_date %}{{ start_date }}{% else %}Awal{% endif %}
+        -
+        {% if end_date %}{{ end_date }}{% else %}Sekarang{% endif %}
+      </p>
+    </div>
+    <button onclick="window.print()">Cetak / Save PDF</button>
+  </div>
+
+  <div class="summary">
+    <div class="box">
+      <p class="muted">Total Pesanan Selesai</p>
+      <h3>{{ summary.total_orders }}</h3>
+    </div>
+    <div class="box">
+      <p class="muted">Total Pendapatan</p>
+      <h3>{{ summary.total_revenue | rupiah }}</h3>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Kode</th>
+        <th>Tanggal</th>
+        <th>Pelanggan</th>
+        <th>Pembayaran</th>
+        <th>Status</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for order in orders %}
+      <tr>
+        <td>{{ order.order_code }}</td>
+        <td>{{ order.created_at.strftime('%d %b %Y %H:%M') }}</td>
+        <td>{{ order.user.name }}</td>
+        <td>{{ order.payment_method }}</td>
+        <td>{{ order.status | replace('_',' ') | title }}</td>
+        <td>{{ order.total_price | rupiah }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6" style="text-align:center;">Belum ada data penjualan.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>

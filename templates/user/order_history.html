@@ -13,9 +13,14 @@
     'siap_diambil': 'Siap Diambil', 'selesai': 'Selesai', 'dibatalkan': 'Dibatalkan'
   } %}
 
+  {% set eta_labels = {
+    'menunggu': 'Menunggu pembayaran', 'diproses': '20-30 menit', 'sedang_dibuat': '10-15 menit',
+    'siap_diambil': 'Siap diambil', 'selesai': 'Selesai', 'dibatalkan': 'Dibatalkan'
+  } %}
+
   {% if orders %}
   <table class="table align-middle">
-    <thead><tr><th>Kode</th><th>Tanggal</th><th>Total</th><th>Status</th><th></th></tr></thead>
+    <thead><tr><th>Kode</th><th>Tanggal</th><th>Total</th><th>Status</th><th>Estimasi</th><th></th></tr></thead>
     <tbody>
       {% for o in orders %}
       <tr>
@@ -23,6 +28,7 @@
         <td>{{ o.created_at.strftime('%d %b %Y %H:%M') }}</td>
         <td>{{ o.total_price | rupiah }}</td>
         <td><span class="badge bg-{{ status_badge.get(o.status, 'secondary') }}">{{ status_labels.get(o.status, o.status | replace('_',' ') | title) }}</span></td>
+        <td>{{ eta_labels.get(o.status, '-') }}</td>
         <td><a href="{{ url_for('order.detail', order_code=o.order_code) }}" class="btn btn-sm btn-outline-secondary">Detail</a></td>
       </tr>
       {% endfor %}

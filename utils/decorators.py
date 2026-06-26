@@ -23,6 +23,32 @@ def admin_required(f):
     return decorated_function
 
 
+def staff_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated:
+            flash("Silakan login terlebih dahulu.", "warning")
+            return redirect(url_for("auth.login"))
+        if not current_user.is_staff():
+            abort(403)
+        return f(*args, **kwargs)
+
+    return decorated_function
+
+
+def order_staff_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated:
+            flash("Silakan login terlebih dahulu.", "warning")
+            return redirect(url_for("auth.login"))
+        if not current_user.can_manage_orders():
+            abort(403)
+        return f(*args, **kwargs)
+
+    return decorated_function
+
+
 def active_user_required(f):
     """Tolak akses jika akun user dinonaktifkan admin."""
 

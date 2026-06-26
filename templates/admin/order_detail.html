@@ -1,12 +1,20 @@
 {% extends "admin/base_admin.html" %}
 {% block title %}Detail Pesanan{% endblock %}
 {% block admin_content %}
-<h2 class="section-title">Pesanan {{ order.order_code }}</h2>
+<div class="d-flex justify-content-between align-items-center mb-3" style="max-width: 600px;">
+  <h2 class="section-title mb-0">Pesanan {{ order.order_code }}</h2>
+  <a href="{{ url_for('admin_order.receipt', order_id=order.id) }}" class="btn btn-cafe">Cetak Struk</a>
+</div>
 
 <div class="card p-3 mb-3" style="max-width: 600px;">
   <p><strong>Pelanggan:</strong> {{ order.user.name }} ({{ order.user.username }})</p>
   <p><strong>Tanggal:</strong> {{ order.created_at.strftime('%d %b %Y %H:%M') }}</p>
+  {% set eta_labels = {
+    'menunggu': 'Menunggu pembayaran', 'diproses': 'Estimasi 20-30 menit', 'sedang_dibuat': 'Estimasi 10-15 menit',
+    'siap_diambil': 'Pesanan siap diambil', 'selesai': 'Pesanan selesai', 'dibatalkan': 'Pesanan dibatalkan'
+  } %}
   <p><strong>Pembayaran:</strong> {{ order.payment_method }}</p>
+  <p><strong>Estimasi:</strong> {{ eta_labels.get(order.status, '-') }}</p>
   {% if order.payment_proof %}
     <p><strong>Bukti Pembayaran:</strong></p>
     <img src="{{ url_for('static', filename='uploads/payment_proofs/' + order.payment_proof) }}" alt="Bukti Pembayaran" class="img-fluid rounded border mb-3" style="max-width: 260px;">
