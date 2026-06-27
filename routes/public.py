@@ -4,16 +4,15 @@ Halaman publik: landing page, about, contact.
 """
 
 from flask import Blueprint, render_template
-from database.models import Product, Review
+from database.models import Review
+from services.menu_service import get_best_seller_products
 
 public_bp = Blueprint("public", __name__, url_prefix="")
 
 
 @public_bp.route("/")
 def landing():
-    best_sellers = (
-        Product.query.filter_by(is_active=True).limit(6).all()
-    )
+    best_sellers = get_best_seller_products(limit=6)
     testimonials = Review.query.order_by(Review.created_at.desc()).limit(5).all()
     return render_template(
         "public/landing.html",

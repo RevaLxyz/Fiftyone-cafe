@@ -5,6 +5,7 @@ Juga berisi fungsi CRUD produk & kategori yang dipakai modul admin.
 """
 
 import logging
+from sqlalchemy import func
 from database.db import db
 from database.models import Product, Category, Order, OrderItem, Review
 from utils.helpers import slugify
@@ -29,6 +30,30 @@ def get_menu(search: str = "", category_id: int = None):
         query = query.filter_by(category_id=category_id)
 
     return query.order_by(Product.name.asc()).all()
+
+
+def get_best_seller_products(limit: int = 6):
+    sold_products = (
+        Product.query
+        .join(OrderItem, OrderItem.product_id == Product.id)
+        .join(Order, Order.id == OrderItem.order_id)
+        .filter(Product.is_active == True, Order.status == "selesai")
+        .add_columns(func.coalesce(func.sum(OrderItem.quantity), 0).label("total_terjual"))
+        .group_by(Product.id)
+        .order_by(func.sum(OrderItem.quantity).desc())
+        .limit(limit)
+        .all()
+    )
+    products = [row[0] for row in sold_products]
+
+    if len(products) < limit:
+        used_ids = [product.id for product in products]
+        query = Product.query.filter_by(is_active=True)
+        if used_ids:
+            query = query.filter(~Product.id.in_(used_ids))
+        products.extend(query.order_by(Product.created_at.desc()).limit(limit - len(products)).all())
+
+    return products
 
 
 def get_all_categories():

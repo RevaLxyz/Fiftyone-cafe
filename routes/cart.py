@@ -5,6 +5,7 @@ Blueprint untuk tambah, edit jumlah, dan hapus produk dari keranjang.
 
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 
+from database.models import Product
 from services.cart_service import (
     add_to_cart, update_quantity, remove_from_cart, get_cart_details,
 )
@@ -27,6 +28,17 @@ def add():
         flash("Produk tidak valid.", "danger")
         return redirect(url_for("menu.index"))
 
+    product = Product.query.get(product_id)
+    if not product or not product.is_active:
+        flash("Produk tidak tersedia.", "danger")
+        return redirect(request.referrer or url_for("menu.index"))
+    if product.stock <= 0:
+        flash("Stok produk sedang habis.", "warning")
+        return redirect(request.referrer or url_for("menu.index"))
+    if quantity > product.stock:
+        flash(f"Stok tidak mencukupi. Sisa stok: {product.stock}.", "warning")
+        return redirect(request.referrer or url_for("menu.index"))
+
     add_to_cart(product_id, quantity)
     flash("Produk ditambahkan ke keranjang.", "success")
     return redirect(request.referrer or url_for("menu.index"))
@@ -35,6 +47,10 @@ def add():
 @cart_bp.route("/update/<int:product_id>", methods=["POST"])
 def update(product_id):
     quantity = request.form.get("quantity", default=1, type=int)
+    product = Product.query.get(product_id)
+    if product and quantity > product.stock:
+        flash(f"Stok tidak mencukupi. Sisa stok: {product.stock}.", "warning")
+        return redirect(url_for("cart.index"))
     update_quantity(product_id, quantity)
     return redirect(url_for("cart.index"))
 

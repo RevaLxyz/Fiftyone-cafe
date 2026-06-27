@@ -6,11 +6,16 @@ Fungsi bantu lintas modul: generate kode pesanan, slug, format rupiah.
 import re
 import uuid
 from datetime import datetime
+from zoneinfo import ZoneInfo
+
+
+def now_jakarta():
+    return datetime.now(ZoneInfo("Asia/Jakarta")).replace(tzinfo=None)
 
 
 def generate_order_code() -> str:
     """Hasilkan kode unik: CFE-20260622-AB12CD"""
-    today = datetime.utcnow().strftime("%Y%m%d")
+    today = now_jakarta().strftime("%Y%m%d")
     unique_part = uuid.uuid4().hex[:6].upper()
     return f"CFE-{today}-{unique_part}"
 

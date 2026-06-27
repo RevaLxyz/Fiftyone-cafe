@@ -5,11 +5,11 @@ Relasi dan constraint mengikuti ERD: users, categories, products,
 orders, order_items, reviews, activity_logs.
 """
 
-from datetime import datetime
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from database.db import db
+from utils.helpers import now_jakarta
 
 
 # ---------------------------------------------------------------------------
@@ -28,8 +28,8 @@ class User(db.Model, UserMixin):
     profile_photo = db.Column(db.String(255), default="default.png")
     role = db.Column(db.Enum("admin", "staff", "kasir", "user", name="role_enum"), default="user", nullable=False)
     is_active = db.Column(db.Boolean, default=True, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=now_jakarta)
+    updated_at = db.Column(db.DateTime, default=now_jakarta, onupdate=now_jakarta)
 
     orders = db.relationship("Order", backref="user", lazy="dynamic")
     reviews = db.relationship("Review", backref="user", lazy="dynamic")
@@ -63,7 +63,7 @@ class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), unique=True, nullable=False)
     slug = db.Column(db.String(120), unique=True, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=now_jakarta)
 
     products = db.relationship("Product", backref="category", lazy="dynamic")
 
@@ -86,8 +86,8 @@ class Product(db.Model):
     image = db.Column(db.String(255), default="default-product.png")
     is_active = db.Column(db.Boolean, default=True, nullable=False)
     stock = db.Column(db.Integer, default=0)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=now_jakarta)
+    updated_at = db.Column(db.DateTime, default=now_jakarta, onupdate=now_jakarta)
 
     order_items = db.relationship("OrderItem", backref="product", lazy="dynamic")
     reviews = db.relationship("Review", backref="product", lazy="dynamic")
@@ -129,8 +129,8 @@ class Order(db.Model):
     payment_method = db.Column(db.String(50))
     payment_proof = db.Column(db.String(255))
     notes = db.Column(db.Text)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=now_jakarta)
+    updated_at = db.Column(db.DateTime, default=now_jakarta, onupdate=now_jakarta)
 
     items = db.relationship(
         "OrderItem", backref="order", lazy="select", cascade="all, delete-orphan"
@@ -168,7 +168,7 @@ class Review(db.Model):
     product_id = db.Column(db.Integer, db.ForeignKey("products.id"), nullable=False)
     rating = db.Column(db.SmallInteger, nullable=False)  # 1-5
     comment = db.Column(db.Text)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=now_jakarta)
 
     __table_args__ = (
         db.CheckConstraint("rating >= 1 AND rating <= 5", name="check_rating_range"),
@@ -189,7 +189,7 @@ class ActivityLog(db.Model):
     action = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text)
     ip_address = db.Column(db.String(45))
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=now_jakarta)
 
     def __repr__(self):
         return f"<ActivityLog {self.action} by user={self.user_id}>"

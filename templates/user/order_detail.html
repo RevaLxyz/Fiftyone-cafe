@@ -51,8 +51,10 @@
     </div>
 
     {% if order.payment_method == 'QRIS' %}
-      <p class="text-muted mb-2">Scan QRIS berikut sesuai nominal pembayaran.</p>
-      <img src="{{ url_for('static', filename='img/qr.jpeg') }}" alt="QRIS" class="img-fluid rounded border mb-3" style="max-width: 260px;">
+      <p class="text-muted mb-2 text-center">Scan QRIS berikut sesuai nominal pembayaran.</p>
+      <div class="text-center">
+        <img src="{{ url_for('static', filename='img/qr.jpeg') }}" alt="QRIS" class="img-fluid rounded border mb-3" style="max-width: 260px;">
+      </div>
     {% elif order.payment_method == 'Transfer Bank' %}
       <p class="mb-1"><strong>Bank:</strong> SeaBank</p>
       <p class="mb-1"><strong>No. Rekening:</strong> 901493048114</p>

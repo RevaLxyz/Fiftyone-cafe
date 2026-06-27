@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Menu - D'51 Cafe{% endblock %}
 {% block content %}
-<div class="container py-4">
+<div class="container py-4 menu-page">
   <h2 class="section-title">Menu Kami</h2>
 
   <form method="GET" class="row g-2 mb-4">
@@ -23,7 +23,7 @@
 
   <div class="row g-4">
     {% for produk in produk_list %}
-    <div class="col-md-4">
+    <div class="col-6 col-md-4">
       <div class="card card-product h-100">
         <div class="bg-cafe-cream-soft" style="aspect-ratio:1/1; display:flex; align-items:center; justify-content:center; overflow:hidden;">
           {% if produk.image and produk.image != 'default-product.png' %}
@@ -32,12 +32,13 @@
           <span style="font-size:3rem;">🍽️</span>
           {% endif %}
         </div>
-        <div class="card-body">
-          <span class="badge bg-secondary mb-2">{{ produk.category.name }}</span>
+        <div class="card-body d-flex flex-column">
+          <span class="badge bg-secondary mb-2 align-self-start">{{ produk.category.name }}</span>
           <h5 class="card-title">{{ produk.name }}</h5>
           <p class="card-text text-muted small">{{ produk.description }}</p>
-          <p class="fw-bold">{{ produk.price | rupiah }}</p>
-          <form method="POST" action="{{ url_for('cart.add') }}" class="m-0">
+          <p class="fw-bold mb-1">{{ produk.price | rupiah }}</p>
+          <p class="text-muted small mb-3">Stok: {{ produk.stock }}</p>
+          <form method="POST" action="{{ url_for('cart.add') }}" class="mt-auto">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <input type="hidden" name="product_id" value="{{ produk.id }}">
             <input type="hidden" name="quantity" value="1">
@@ -50,5 +51,15 @@
     <p class="text-center text-muted">Menu tidak ditemukan.</p>
     {% endfor %}
   </div>
+
+  {% if cart.lines %}
+  <div class="mobile-cart-bar">
+    <div>
+      <strong>{{ cart.lines | length }} item</strong>
+      <div class="small">Total {{ cart.total | rupiah }}</div>
+    </div>
+    <a href="{{ url_for('cart.index') }}" class="btn btn-cafe btn-sm">Lihat Keranjang</a>
+  </div>
+  {% endif %}
 </div>
 {% endblock %}

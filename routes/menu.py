@@ -5,6 +5,7 @@ Blueprint untuk lihat semua menu, search, filter kategori, dan detail menu.
 
 from flask import Blueprint, render_template, request
 
+from services.cart_service import get_cart_details
 from services.menu_service import get_menu, get_all_categories, get_product_by_slug
 
 menu_bp = Blueprint("menu", __name__, url_prefix="/menu")
@@ -17,6 +18,7 @@ def index():
 
     produk_list = get_menu(search=search, category_id=category_id)
     categories = get_all_categories()
+    cart = get_cart_details()
 
     return render_template(
         "user/menu_list.html",
@@ -24,6 +26,7 @@ def index():
         categories=categories,
         search=search,
         category_id=category_id,
+        cart=cart,
     )
 
 

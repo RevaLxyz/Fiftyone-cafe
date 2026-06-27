@@ -5,6 +5,7 @@
   <h2 class="section-title">Keranjang Belanja</h2>
 
   {% if cart.lines %}
+  <div class="table-responsive cart-table">
   <table class="table align-middle">
     <thead>
       <tr><th>Produk</th><th>Harga</th><th>Jumlah</th><th>Subtotal</th><th></th></tr>
@@ -15,7 +16,7 @@
         <td>{{ item.product.name }}</td>
         <td>{{ item.product.price | rupiah }}</td>
         <td style="max-width:120px;">
-          <form method="POST" action="{{ url_for('cart.add', product_id=item.product.id) }}" class="d-flex gap-1">
+          <form method="POST" action="{{ url_for('cart.update', product_id=item.product.id) }}" class="d-flex gap-1">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <input type="number" name="quantity" value="{{ item.quantity }}" min="1" class="form-control form-control-sm">
             <button type="submit" class="btn btn-sm btn-outline-secondary">↻</button>
@@ -32,8 +33,9 @@
       {% endfor %}
     </tbody>
   </table>
+  </div>
 
-  <div class="d-flex justify-content-between align-items-center">
+  <div class="d-flex justify-content-between align-items-center cart-summary-actions">
     <h4>Total: {{ cart.total | rupiah }}</h4>
     <a href="{{ url_for('order.checkout_view') }}" class="btn btn-cafe btn-lg">Checkout</a>
   </div>
