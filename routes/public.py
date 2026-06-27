@@ -3,7 +3,7 @@ routes/public.py
 Halaman publik: landing page, about, contact.
 """
 
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, current_app, send_from_directory
 from database.models import Review
 from services.menu_service import get_best_seller_products
 
@@ -18,6 +18,16 @@ def landing():
         "public/landing.html",
         best_sellers=best_sellers,
         testimonials=testimonials,
+    )
+
+
+@public_bp.route("/favicon.ico")
+def favicon():
+    return send_from_directory(
+        current_app.static_folder,
+        "img/logo.png",
+        mimetype="image/png",
+        max_age=0,
     )
 
 
